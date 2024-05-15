@@ -93,23 +93,33 @@ profile_data <- function(monitor_path){
 #' @import ggplot2
 #' @examples
 memory_plot <- function(monitor_path, meta_args = list()){
-  meta <- do.call(targets::tar_meta, meta_args)
 
   memory <- monitor_path |>
     profile_data() |>
     dplyr::mutate(memory_usage = rss / 1E6, pid = as.factor(pid)) |>
     dplyr::select(time, memory_usage, pid)
 
-  time_start <- min(meta$time, memory$time)
+  targets <- do.call(targets::tar_meta, meta_args) |>
+    dplyr::filter(
+      !is.na(time)
+    ) |>
+    dplyr::mutate(
+      end_time = time,
+      start_time = end_time - seconds,
+      mid_time = end_time - (seconds / 2),
+      preceding_end = dplyr::lag(end_time, default = min(memory$time)),
+      time_between = end_time - preceding_end,
+      display_midpoint = preceding_end + (time_between / 2)
+    )
 
-
+  #browser()
 
     ggplot() +
       geom_line(aes(x = time, y = memory_usage, color = pid), data = memory) +
       xlab("Time") +
       ylab("Memory Usage (MB)") +
-      geom_vline(aes(xintercept = time), data = meta) +
-      geom_text(aes(x = time, label = name), data = meta, y = 0, angle = 90, hjust = "left", vjust = "top")
+      geom_vline(aes(xintercept = end_time), data = targets) +
+      geom_text(aes(x = display_midpoint, label = name), data = targets, y = 0, angle = 90, hjust = "left")
 }
 
 #' Title
