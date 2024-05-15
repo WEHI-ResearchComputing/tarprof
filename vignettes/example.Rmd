@@ -1,0 +1,48 @@
+---
+title: "example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+We create the targets pipeline as normal:
+
+```{r}
+targets::tar_invalidate(everything())
+```
+
+```{r}
+targets::tar_script({
+  library(targets)
+  list(
+    tar_target(sizes, c(10E6, 10E7, 10E8)),
+    tar_target(make_vectors, numeric(sizes), pattern = map(sizes))
+  )
+}, ask = FALSE)
+```
+
+
+When it comes to running, we pass in the custom `callr_function`:
+
+```{r}
+monitor_path <- file.path(getwd(), "profile_results")
+targets::tar_make(
+  callr_function = tarprof::callr_profile,
+  callr_arguments = list(
+    monitor_path = monitor_path
+  )
+)
+```
+
+```{r}
+tarprof::profile_data(monitor_path)
+```
+
+```{r}
+tarprof::memory_plot(monitor_path)
+```
+
+
+
