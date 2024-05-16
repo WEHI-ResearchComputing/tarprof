@@ -19,3 +19,5 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
+URL: https://wehi-researchcomputing.github.io/tarprof, https://github.com/WEHI-ResearchComputing/tarprof
+BugReports: https://github.com/WEHI-ResearchComputing/tarprof/issues
