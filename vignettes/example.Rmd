@@ -9,25 +9,28 @@ vignette: >
 
 We create the targets pipeline as normal:
 
+```{r, echo=2:5}
+targets::tar_script({
+list(
+  tar_target(sizes, c(10E6, 10E7, 10E8)),
+  tar_target(make_vectors, numeric(sizes), pattern = map(sizes))
+)
+}, ask = FALSE)
+```
+
+We need to specify a directory that will be used to save the profiling results:
 ```{r}
+monitor_path <- file.path(getwd(), "profile_results")
+```
+
+When it comes to running, we pass in the custom `callr_function`.
+In addition, we need to pass that function arguments using `callr_arguments`.
+One of these arguments must be `monitor_path`.
+```{r, echo=FALSE, error=TRUE}
 targets::tar_invalidate(everything())
 ```
 
 ```{r}
-targets::tar_script({
-  library(targets)
-  list(
-    tar_target(sizes, c(10E6, 10E7, 10E8)),
-    tar_target(make_vectors, numeric(sizes), pattern = map(sizes))
-  )
-}, ask = FALSE)
-```
-
-
-When it comes to running, we pass in the custom `callr_function`:
-
-```{r}
-monitor_path <- file.path(getwd(), "profile_results")
 targets::tar_make(
   callr_function = tarprof::callr_profile,
   callr_arguments = list(
@@ -36,10 +39,12 @@ targets::tar_make(
 )
 ```
 
+We can access the profiling data using `profile_data`.
+This returns a data frame where each row is one timepoint, and the columns correspond to various process metrics.
 ```{r}
 tarprof::profile_data(monitor_path)
 ```
-
+We can also use `memory_plot`, which connects the targets metadata with the monitoring data, allowing you to estimate the memory usage of each target:
 ```{r}
 tarprof::memory_plot(monitor_path)
 ```

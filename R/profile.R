@@ -1,5 +1,9 @@
 #' Monitor a process
 #'
+#' This is not unique to Targets, and may be useful elsewhere.
+#' Note that this function will only ever terminate if the process it's
+#' monitoring terminates. Keep this in mind.
+#'
 #' @param pid Pid of the process to monitor. Integer vector with length 1.
 #' @param interval Amount of time in seconds between resource polls. Double vector of length 1.
 #'
@@ -44,6 +48,8 @@ monitor_pid <- function(pid, interval = 0.1){
 
 #' Monitor a process and save the results
 #'
+#' Users will typically not need to call this function directly.
+#'
 #' @param path Path to the RDS where the results will be saved. Character scalar.
 #' @inheritParams monitor_pid
 #' @return Nothing
@@ -55,14 +61,13 @@ monitor_save <- function(path, ...){
 
 #' callr-compatible function that monitors the process's resources
 #'
+#' This should be used as the value of `callr_function` for [tar_make()].
+#'
 #' @inheritParams callr::r_bg
-#' @param monitor_path
-#' @param monitor_interval
-#'
-#' @return
+#' @param monitor_path Path to the RDS where the results will be saved. Character scalar.
+#' @param monitor_interval Amount of time in seconds between resource polls. Double vector of length 1.
+#' @return The result of the function, identically to a standard callr function
 #' @export
-#'
-#' @examples
 callr_profile <- function(..., monitor_path, monitor_interval = 0.1){
   dir.create(monitor_path, showWarnings = FALSE)
   process <- callr::r_bg(...)
@@ -78,23 +83,28 @@ callr_profile <- function(..., monitor_path, monitor_interval = 0.1){
   process$get_result()
 }
 
+#' Read the monitoring data
+#'
+#' @param monitor_path Path to the directory previously passed to [monitor_pid].
+#'  Character scalar.
+#' @return Tibble containing monitoring data. Each row is one timepoint, and
+#'  the columns correspond to various process metrics.
+#' @export
 profile_data <- function(monitor_path){
   list.files(monitor_path, pattern = ".*\\.rds", full.names = TRUE) |>
     purrr::map(readRDS) |>
     purrr::list_rbind()
 }
 
-#' Title
+#' Plot the memory usage over time
 #'
-#' @param monitor_path
-#'
-#' @return
+#' @inheritParams profile_data
+#' @return A `ggplot` object
 #' @export
 #' @import ggplot2
-#' @examples
 memory_plot <- function(monitor_path, meta_args = list()){
 
-  memory <- monitor_path |>
+  profile <- monitor_path |>
     profile_data() |>
     dplyr::mutate(memory_usage = rss / 1E6, pid = as.factor(pid)) |>
     dplyr::select(time, memory_usage, pid)
@@ -104,41 +114,36 @@ memory_plot <- function(monitor_path, meta_args = list()){
       !is.na(time)
     ) |>
     dplyr::mutate(
+      # When the target ended
       end_time = time,
+      # When the target started
       start_time = end_time - seconds,
+      # Middle of execution
       mid_time = end_time - (seconds / 2),
-      preceding_end = dplyr::lag(end_time, default = min(memory$time)),
+      # The end of the previous target
+      preceding_end = dplyr::lag(end_time, default = min(profile$time)),
+      # Time between the previous target and this target ending
       time_between = end_time - preceding_end,
+      # Midpoint between the previous target and this target ending
       display_midpoint = preceding_end + (time_between / 2)
     )
 
-  #browser()
+  combined <- dplyr::inner_join(profile, targets, by = dplyr::join_by(
+    dplyr::between(time, start_time, end_time)
+  ), suffix = c("_profile", "_targets"))
 
-    ggplot() +
-      geom_line(aes(x = time, y = memory_usage, color = pid), data = memory) +
-      xlab("Time") +
-      ylab("Memory Usage (MB)") +
-      geom_vline(aes(xintercept = end_time), data = targets) +
-      geom_text(aes(x = display_midpoint, label = name), data = targets, y = 0, angle = 90, hjust = "left")
-}
+  max_mem <- combined |>
+    dplyr::slice_max(memory_usage, by = name, with_ties = FALSE)
 
-#' Title
-#'
-#' @param monitor_path
-#'
-#' @return
-#' @export
-#' @import ggplot2
-#' @examples
-cpu_plot <- function(monitor_path){
-  plot <- monitor_path |>
-    profile_data() |>
-    dplyr::mutate(memory_usage = rss / 1E6, pid = as.factor(pid)) |>
-    dplyr::select(time, memory_usage, pid) |>
-    ggplot(aes(x = time, y = memory_usage, color = pid))
-
-  plot +
-    geom_line() +
+  ggplot() +
+    geom_line(aes(x = time, y = memory_usage), data = profile) +
     xlab("Time") +
-    ylab("Memory Usage (MB)")
+    ylab("Memory Usage (MB)") +
+    geom_rect(aes(xmin = start_time, xmax = end_time, ymin = -Inf, ymax = Inf, fill = name, colour = name), data = targets, alpha=0.3) +
+    geom_point(aes(x = time_profile, y = memory_usage, color = name), data = max_mem) +
+    geom_label(aes(x = time_profile, y = memory_usage, label = format(memory_usage, digits = 1), color = name), data = max_mem, vjust = "bottom", nudge_y = 200, size = 3) +
+    scale_x_datetime(
+      timezone = Sys.timezone(),
+      date_labels = "%H:%M:%S"
+    )
 }
