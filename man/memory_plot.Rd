@@ -7,11 +7,11 @@
 memory_plot(monitor_path, meta_args = list())
 }
 \arguments{
-\item{monitor_path}{Path to the directory previously passed to [monitor_pid].
+\item{monitor_path}{Path to the directory previously passed to \link{monitor_pid}.
 Character scalar.}
 }
 \value{
-A `ggplot` object
+A \code{ggplot} object
 }
 \description{
 Plot the memory usage over time

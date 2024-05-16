@@ -1,21 +1,21 @@
 Package: tarprof
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Utilities for profiling Targets workflows
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Michael Milton <michael.r.milton@gmail.com>
+Maintainer: Michael Milton <michael.r.milton@gmail.com>
+Description: It can be difficult to estimate how many resources your Targets pipelines
+  are using, especially when interfacing with a cloud or HPC system. This
+  package provides some utilities to handle this scenario.
 Encoding: UTF-8
 LazyData: true
 Imports: 
     callr,
-    processx,
-    ps,
-    crew
+    targets,
+    ps
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 7.3.1
+Roxygen: list(markdown = TRUE)

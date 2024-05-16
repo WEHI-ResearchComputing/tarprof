@@ -15,5 +15,7 @@ monitor_pid(pid, interval = 0.1)
 A data frame of resource results, one row per timepoint
 }
 \description{
-Monitor a process
+This is not unique to Targets, and may be useful elsewhere.
+Note that this function will only ever terminate if the process it's
+monitoring terminates. Keep this in mind.
 }

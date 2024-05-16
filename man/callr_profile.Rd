@@ -18,5 +18,5 @@ constructor.}
 The result of the function, identically to a standard callr function
 }
 \description{
-callr-compatible function that monitors the process's resources
+This should be used as the value of \code{callr_function} for \code{\link[=tar_make]{tar_make()}}.
 }

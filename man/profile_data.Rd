@@ -7,12 +7,12 @@
 profile_data(monitor_path)
 }
 \arguments{
-\item{monitor_path}{Path to the directory previously passed to [monitor_pid].
+\item{monitor_path}{Path to the directory previously passed to \link{monitor_pid}.
 Character scalar.}
 }
 \value{
 Tibble containing monitoring data. Each row is one timepoint, and
- the columns correspond to various process metrics.
+the columns correspond to various process metrics.
 }
 \description{
 Read the monitoring data

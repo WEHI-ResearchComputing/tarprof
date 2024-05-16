@@ -6,7 +6,7 @@
 #'
 #' @param pid Pid of the process to monitor. Integer vector with length 1.
 #' @param interval Amount of time in seconds between resource polls. Double vector of length 1.
-#'
+#' @export
 #' @return A data frame of resource results, one row per timepoint
 monitor_pid <- function(pid, interval = 0.1){
   handle <- ps::ps_handle(pid = as.integer(pid))
@@ -49,9 +49,10 @@ monitor_pid <- function(pid, interval = 0.1){
 #' Monitor a process and save the results
 #'
 #' Users will typically not need to call this function directly.
+#' Instead, prefer [monitor_pid].
 #'
 #' @param path Path to the RDS where the results will be saved. Character scalar.
-#' @inheritParams monitor_pid
+#' @inheritDotParams monitor_pid pid interval
 #' @return Nothing
 #' @export
 monitor_save <- function(path, ...){
@@ -77,9 +78,16 @@ callr_profile <- function(..., monitor_path, monitor_interval = 0.1){
     pid = pid,
     path = file.path(monitor_path, filename),
     interval = monitor_interval
-  ))
+  ), error = "error")
   process$wait()
+
+  # Wait for monitor to finish, then handle any errors
   monitor$wait()
+  if (monitor$get_exit_status() != 0){
+    stop(monitor$read_error())
+  }
+
+  # Return the regular result
   process$get_result()
 }
 

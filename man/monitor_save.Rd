@@ -8,10 +8,18 @@ monitor_save(path, ...)
 }
 \arguments{
 \item{path}{Path to the RDS where the results will be saved. Character scalar.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=monitor_pid]{monitor_pid}}
+  \describe{
+    \item{\code{pid}}{Pid of the process to monitor. Integer vector with length 1.}
+    \item{\code{interval}}{Amount of time in seconds between resource polls. Double vector of length 1.}
+  }}
 }
 \value{
 Nothing
 }
 \description{
-Monitor a process and save the results
+Users will typically not need to call this function directly.
+Instead, prefer \link{monitor_pid}.
 }
