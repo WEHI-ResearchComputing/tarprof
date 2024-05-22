@@ -71,7 +71,9 @@ monitor_save <- function(path, ...){
 #' @export
 callr_profile <- function(..., monitor_path, monitor_interval = 0.1){
   dir.create(monitor_path, showWarnings = FALSE)
-  process <- callr::r_bg(...)
+  # We need to explicitly use "" to ensure that the stderr is forwarded
+  # to the R console
+  process <- callr::r_bg(..., stderr = "", stdout = "")
   pid <- process$get_pid()
   filename <- paste0(pid, ".rds")
   monitor <- callr::r_bg(tarprof::monitor_save, args = list(
