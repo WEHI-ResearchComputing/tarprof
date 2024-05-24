@@ -54,16 +54,33 @@ Eventually I hope to lift this limitation.
 We can access the profiling data using `profile_data`.
 This returns a data frame where each row is one timepoint, and the columns correspond to various process metrics.
 ```{r}
-tarprof::profile_data(monitor_path)
+profile <- tarprof::profile_data(monitor_path)
+profile
 ```
-We can also use `memory_plot`, which connects the targets metadata with the monitoring data, allowing you to estimate the memory usage of each target.
+
+However, this information isn't much help without the knowledge of which targets were run at which times.
+We can integrate this information using `profile_per_target`:
+
+```{r}
+per_target <- tarprof::profile_per_target(profile)
+per_target
+```
+
+Next, we can use the built-in summary function to get the maximum memory usage and CPU efficiency of each target:
+```{r}
+profile_summary <- tarprof::summarise_targets(per_target)
+profile_summary
+```
+
+Finally we can use `memory_plot` to represent the memory usage 
 In the plot below, each colour corresponds to a different target.
 The coloured band indicates the time that `targets` thinks the target was running for (although I'm unsure how accurate this is).
 The labelled point indicates the maximum memory usage for that target.
+Note that these maximum points correspond to the value of `peak_memory` in the previous data frame.
 ```{r}
 #| fig.height = 6,
 #| fig.width = 10
-tarprof::memory_plot(monitor_path)
+tarprof::memory_plot(profile)
 ```
 
 

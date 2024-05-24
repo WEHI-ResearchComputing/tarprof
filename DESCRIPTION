@@ -1,7 +1,7 @@
 Package: tarprof
 Type: Package
 Title: Utilities for profiling Targets workflows
-Version: 0.1.0
+Version: 0.2.0
 Author: Michael Milton <michael.r.milton@gmail.com>
 Maintainer: Michael Milton <michael.r.milton@gmail.com>
 Description: It can be difficult to estimate how many resources your Targets pipelines
@@ -12,7 +12,8 @@ LazyData: true
 Imports: 
     callr,
     targets,
-    ps
+    ps,
+    cli
 Suggests: 
     knitr,
     rmarkdown

@@ -19,3 +19,4 @@ This is not unique to Targets, and may be useful elsewhere.
 Note that this function will only ever terminate if the process it's
 monitoring terminates. Keep this in mind.
 }
+\concept{profiling}

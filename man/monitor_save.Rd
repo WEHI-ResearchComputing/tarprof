@@ -23,3 +23,4 @@ Nothing
 Users will typically not need to call this function directly.
 Instead, prefer \link{monitor_pid}.
 }
+\concept{profiling}
