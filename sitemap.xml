@@ -4,6 +4,9 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/CHANGELOG.html</loc>
+  </url>
+  <url>
     <loc>/LICENSE-text.html</loc>
   </url>
   <url>
@@ -37,6 +40,15 @@
     <loc>/reference/monitor_save.html</loc>
   </url>
   <url>
+    <loc>/reference/process_meta.html</loc>
+  </url>
+  <url>
     <loc>/reference/profile_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/profile_per_target.html</loc>
+  </url>
+  <url>
+    <loc>/reference/summarise_targets.html</loc>
   </url>
 </urlset>
