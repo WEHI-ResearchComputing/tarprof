@@ -118,7 +118,7 @@ memory_plot <- function(profile, targets = process_meta()){
     geom_line(aes(x = time, y = memory_usage), data = profile_mb) +
     xlab("Time") +
     ylab("Memory Usage (MB)") +
-    geom_rect(aes(xmin = start_time, xmax = end_time, ymin = -Inf, ymax = Inf, fill = name, colour = name), data = per_target, alpha=0.3) +
+    geom_rect(aes(xmin = start_time, xmax = end_time, ymin = -Inf, ymax = Inf, fill = name), data = per_target, alpha=0.1) +
     geom_point(aes(x = peak_memory_time, y = peak_memory, color = name), data = summary) +
     geom_label(aes(x = peak_memory_time, y = peak_memory, label = format(peak_memory, digits = 1), color = name), data = summary, vjust = "bottom", nudge_y = 200, size = 3) +
     scale_x_datetime(
