@@ -12,4 +12,4 @@ remotes::install_github("WEHI-ResearchComputing/tarprof")
 
 ## Usage
 
-[See the documentation website here!](https://wehi-researchcomputing.github.io/tarprof)
+[See the documentation website here!](https://wehi-researchcomputing.github.io/tarprof/articles/tarprof.html)
