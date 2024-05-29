@@ -51,7 +51,7 @@ Note that for the moment, it is not recommended that you use any parallelism whe
 In other words, when calling `crew::crew_controller_local`, use `workers = 1`.
 Eventually I hope to lift this limitation.
 
-We can access the profiling data using `profile_data`.
+Once the targets pipeline has finished, we can access the profiling data using [profile_data].
 This returns a data frame where each row is one timepoint, and the columns correspond to various process metrics.
 ```{r}
 profile <- tarprof::profile_data(monitor_path)
