@@ -1,10 +1,14 @@
 ---
 title: "tarprof"
-output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{tarprof}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+output:
+  html_vignette:
+    df_print: paged
+  html_document:
+    df_print: paged
 ---
 
 ```{r, echo=FALSE}
@@ -34,7 +38,6 @@ monitor_path <- file.path(getwd(), "profile_results")
 list.files(monitor_path, full.names = TRUE) |> unlink()
 ```
 
-
 When it comes to running, we pass in the custom `callr_function`.
 In addition, we need to pass that function arguments using `callr_arguments`.
 One of these arguments must be `monitor_path`.
@@ -51,7 +54,7 @@ Note that for the moment, it is not recommended that you use any parallelism whe
 In other words, when calling `crew::crew_controller_local`, use `workers = 1`.
 Eventually I hope to lift this limitation.
 
-Once the targets pipeline has finished, we can access the profiling data using [profile_data].
+Once the targets pipeline has finished, we can access the profiling data using `tarprof::profile_data`.
 This returns a data frame where each row is one timepoint, and the columns correspond to various process metrics.
 ```{r}
 profile <- tarprof::profile_data(monitor_path)
@@ -59,7 +62,7 @@ profile
 ```
 
 However, this information isn't much help without the knowledge of which targets were run at which times.
-We can integrate this information using `profile_per_target`:
+We can integrate this information using `tarprof::profile_per_target`:
 
 ```{r}
 per_target <- tarprof::profile_per_target(profile)
@@ -72,7 +75,7 @@ profile_summary <- tarprof::summarise_targets(per_target)
 profile_summary
 ```
 
-Finally we can use `memory_plot` to represent the memory usage 
+Finally we can use `tarprof::memory_plot` to represent the memory usage 
 In the plot below, each colour corresponds to a different target.
 The coloured band indicates the time that `targets` thinks the target was running for (although I'm unsure how accurate this is).
 The labelled point indicates the maximum memory usage for that target.
